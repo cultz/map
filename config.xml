@@ -1,14 +1,12 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="kr.qolt.qmap" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Qmap</name>
-    <description>
-        A sample Apache Cordova application that responds to the deviceready event.
-    </description>
-    <author email="cultz@snu.ac.kr" href="http://map.qolt.kr">
-        Apache Cordova Team
-    </author>
+    <description>커뮤니티 맵핑 지도 앱</description>
+    <author email="cultz@snu.ac.kr" href="http://map.qolt.kr">공영국</author>
     <content src="index.html" />
     <access origin="*" />
     <preference name="fullscreen" value="true" />
     <preference name="webviewbounce" value="true" />
+    <preference name="phonegap-version" value="3.1.0" />
+    <preference name="orientation" value="portrait" />
 </widget>
