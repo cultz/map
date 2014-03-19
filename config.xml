@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="kr.qolt.qmap" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="kr.qolt.maps" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Qmap</name>
     <description>커뮤니티 맵핑 지도 앱</description>
     <author email="cultz@snu.ac.kr" href="http://map.qolt.kr">공영국</author>
