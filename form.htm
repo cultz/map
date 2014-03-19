@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
+	<link href="css/jquery.mobile-1.4.0.min.css" rel="stylesheet" />
+	<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDht04F5GPPaHua_ZLIEdWhCDCt9SCOaA8&sensor=true&language=ko&libraries=places"></script>
+	<script src="js/jquery-1.9.1.min.js"></script>
+	<script src="js/jquery.mobile-1.4.0.min.js"></script>
+	<script src="js/jquery.couch.min.js"></script>
+	<script src="js/jquery.snail.min.js"></script>
+	<title>입력</title>
+	<style>
+		#facility .ui-btn {padding:.5em .8em;}
+		#tags_autocomplete {position:relative;margin:0px;width:100%;margin-top:-7px;z-index:999;display:none;cursor:pointer;} 
+		.picto {width:28px;} 
+	</style>
+</head>
+<body>
+<!--:::::::::::::::::::::::::::::::::: [ 입력폼 ] :::::::::::::::::::::::::::::::::::::::::-->
+<div data-role="page" id="page-form">
+	<div data-role="header">
+		<h1>위치 정보 등록</h1>
+		<a data-rel="back" data-role="button" data-icon="back">취소</a>
+		<a href="#" onclick="post()" data-role="button" data-icon="check">저장</a>
+	</div>
+	<div data-role="content" class="app">
+	   	<form>
+	   	<input type="text" name="address" id="address" placeholder="주소를 입력해주세요" title="주소 입력">
+	   	<input type="text" name="title" id="title" placeholder="장소명을 입력해주세요" title="장소명 입력">
+	   	<input type="text" name="tags" id="tags" value="" onfocus="showTags();" placeholder="태그를 입력해 주세요  콤마(,)로 구분" title="태그를 입력  콤마로 구분">
+	   	<a href="#" onclick="hideTags();" class="ui-input-clear ui-btn ui-btn-inline ui-icon-arrow-u ui-btn-icon-notext" style="float:right;margin-top:-2.5em;display:none;">감추기</a>
+	   	<ul id="tags_autocomplete" data-role="listview" class="ui-listview">
+	   		<li>관광지,공원</li>
+	   		<li>공공기관</li>
+	   		<li>병원,의료</li>
+	   		<li>학교,학원</li>
+			<li>레저,운동</li>
+			<li>극장,공연장</li>
+			<li>회사,기업</li>
+			<li>마트,시장</li>
+			<li>숙박시설</li>
+			<li>종교시설</li>
+			<li>복지시설</li>
+			<li>상업시설</li>
+	   	</ul>
+	   	<fieldset id="facility" data-role="controlgroup" data-type="horizontal">
+	   		<legend style="display:none;">장애인 편의시설 정보</legend>
+			<input type="checkbox" id="checkbox-a" data-mini="true" value="1">
+			<label for="checkbox-a" class="mini"><img src="img/a-icon1.png" alt="승강기" class="picto"><br/>승강기</label>
+			<input type="checkbox" id="checkbox-b" data-mini="true" value="1">
+			<label for="checkbox-b" class="mini"><img src="img/a-icon2.png" alt="촉지도" class="picto"><br/>촉지도</label>
+			<input type="checkbox" id="checkbox-c" data-mini="true" value="1">
+			<label for="checkbox-c" class="mini"><img src="img/a-icon3.png" alt="주차장" class="picto"><br/>주차장</label>
+			<input type="checkbox" id="checkbox-d" data-mini="true" value="1">
+			<label for="checkbox-d" class="mini"><img src="img/a-icon4.png" alt="경사로" class="picto"><br/>경사로</label>
+			<input type="checkbox" id="checkbox-e" data-mini="true" value="1">
+			<label for="checkbox-e" class="mini"><img src="img/a-icon5.png" alt="화장실" class="picto"><br/>화장실</label>
+		</fieldset>
+		<input type="text" name="tel" id="tel" placeholder="전화번호를 입력해주세요">
+		<input type="text" name="homepage" id="homepage" placeholder="홈페이지를 입력해주세요">
+	   	<textarea name="content" id="content" placeholder="상세한 설명을 입력해 주세요" title="정소에 대한 상세한 설명글을 입력해 주세요"></textarea>
+	   	<input type="hidden" name="zoom" id="zoom" value="0">
+	   	<input type="hidden" name="position" id="position" value="">
+		<input type="hidden" name="username" id="username" value="">
+	   	</form>
+	</div>
+</div>
+<!--:::::::::::::::::::::::::::::::::: [ 입력폼 ] :::::::::::::::::::::::::::::::::::::::::-->
+<script type="text/javascript" src="cordova.js"></script>
+<script>
+var doc = {};
+function showTags() {
+	var tags = $('#tags').val()=='' ? [] : $('#tags').val().split(",");
+	$('#tags_autocomplete li').each(function(){
+		var text =  $(this).text();
+		if( tags.indexOf(text) != -1 ) {
+			$(this).css('display','none');	
+		} else {
+			$(this).css('display','block');
+		}
+		$(this).click(function(){
+			tags.push($(this).text());
+			$('#tags').val(tags.join(','));
+			$('#tags_autocomplete').css({display:'none'});
+			$('.ui-input-clear').css('display','none');
+		});
+	});
+	
+	$('#tags_autocomplete').css({display:'block'});
+	$('.ui-input-clear').css('display','block');
+}
+function hideTags() {
+	$('#tags_autocomplete').css({display:'none'});
+	$('.ui-input-clear').css('display','none');
+}
+function auth_success(sess) {
+	if($.inArray('_admin', sess.userCtx.roles) > -1 || $.inArray('manager', sess.userCtx.roles) > -1) {
+		//관리자 일때는 암것도 안함
+	} else {
+		sess.userCtx.name ? $('#username').val(sess.userCtx.name) : $('#username').val('');
+	}
+}
+function auth_failure() {
+	alert('인증오류가 발생하였습니다. 문제가 계속되면 관리자에게 문의하세요');
+}
+function gps_success(position) {
+	var pos = new google.maps.LatLng(position[0], position[1]);
+	$('#position').val([pos.lat(), pos.lng()]);
+	qmap.geoToAddress(pos, function(results, status) {
+		if (status == google.maps.GeocoderStatus.OK) {
+			$('#address').val( results[0].formatted_address );
+		}
+	});
+}
+function gps_failure(err) {
+	alert('위치를 찾을 수 없습니다. [코드:"+err.code+"]');
+}
+function addressAutocomplete(input, callback) {
+	var autocomplete = new google.maps.places.Autocomplete(input);
+	
+	google.maps.event.addListener(autocomplete, 'place_changed', function() {
+	    var place = autocomplete.getPlace();
+	    if (!place.geometry) {
+	      return;
+	    }
+	    callback(place.geometry.location);
+	});
+}
+function chkForm() {
+	if(!$('form input[name="username"]').val()) {
+		alert('로그인 후 이용해 주세요'); return;
+	}
+	if(!$('form input[name="position"]').val()) {
+		alert('위치 정보를 가져올 수 없습니다. 해당 주소가 정확한지 또는 GPS가 켜져 있는지 확인 후 다시 시도해 보시기 바랍니다');	return;
+	}
+	if(!$('form input[name="address"]').val()) {
+		alert('등록할 주소를 입력해 주세요');$('form input[name="address"]').focus();return;
+	}
+	if(!$('form input[name="title"]').val()) {
+		alert('장소명을 입력해 주세요');	$('form input[name="title"]').focus();return;
+	}
+	if(!$('form input[name="tags"]').val()) {
+		alert('태그명을 입력해 주세요');	$('form input[name="tags"]').focus();return;
+	}
+	if(!$('form textarea[name="content"]').val()) {
+		alert('상세설명을 입력해 주세요');$('form textarea[name="content"]').focus();return;
+	}
+	return true;
+}
+$.fn.serializeObject = function()
+{
+    var o = {};
+    var a = this.serializeArray();
+    $.each(a, function() {
+        if (o[this.name] !== undefined) {
+            if (!o[this.name].push) {
+                o[this.name] = [o[this.name]];
+            }
+            o[this.name].push(this.value || '');
+        } else {
+            o[this.name] = this.value || '';
+        }
+    });
+    return o;
+};
+
+function post() { //저장
+	//if(!confirm('입력한 정보로 저장하시겠습니까?')) return;
+	if(!chkForm()) return; 
+	var form = $('form').serializeObject();
+	$.extend(doc, form);
+	
+	doc.options = [];
+	$('#facility input[type=checkbox]').each(function(i){doc.options[i]=$(this).prop('checked')?'1':'0';});
+	doc.position = doc.position.split(',');
+	doc.updated = new Date().valueOf();
+	qmap.setDoc(doc, {success: function(data){
+		var msg = doc._rev.indexOf('1-') == 0 ? '등록되었습니다.' : '수정되었습니다.';
+		if(data.ok && confirm(msg + ' 상세 페이지로 이동하시겠습니까?')) {
+			document.location='view.htm?id='+data.id; 
+		} else {
+			qmap.viewMap();
+		}
+	}});
+}
+
+function onDeviceReady() {
+	if($.mobile.phone) {
+		qmap.chkNetwork();//네트워크 상태 점검
+	}
+	$(document).delegate('#page-form', 'pageshow', onFormShow());
+}
+function onFormShow() {
+	var lat=$.p('lat'), lng=$.p('lng');
+	(lat&&lng) ? gps_success([lat,lng]) : qmap.getGeoLocation(function(pos){gps_success([pos.coords.latitude,pos.coords.longitude]);});
+	if($.p('id')) { //수정
+		qmap.getDoc($.p('id'), {success: 
+			function(data){
+				doc = data;
+				$('#address').val(doc.address);	$('#title').val(doc.title);	$('#tags').val(doc.tags); $('#tel').val(doc.tel); $('#homepage').val(doc.homepage); $('#content').val(doc.content); $('#position').val([doc.position[0],doc.position[1]]); $('#username').val(doc.username); $('#id').val(doc._id);	$('#rev').val(doc._rev);
+				//편의시설
+				$('#facility input[type=checkbox]').each(function(i) { if(doc.options) $(this).prop("checked", doc.options[i]=='1' ? true : false).checkboxradio('refresh'); });
+			}
+		});
+	}
+	addressAutocomplete(document.getElementById('address'), function(pos){$('#position').val([pos.lat(),pos.lng()]);});
+	qmap.chkLogin(auth_success, auth_failure);
+}
+
+if($.mobile.phone) document.addEventListener("deviceready", onDeviceReady, false);
+$('#page-form').on('pageshow',function(){onFormShow()});
+</script>
+</body>
+</html>

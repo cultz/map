@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport"
+	content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
+<link href="css/jquery.mobile-1.4.0.min.css" rel="stylesheet" />
+<script src="js/jquery-1.9.1.min.js"></script>
+<script src="js/jquery.mobile-1.4.0.min.js"></script>
+<script	src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDht04F5GPPaHua_ZLIEdWhCDCt9SCOaA8&sensor=true&language=ko"></script>
+<script src="js/jquery.couch.min.js"></script>
+<script src="js/jquery.snail.min.js"></script>
+<title>QoLT 커뮤니티 맵핑</title>
+<style>
+.ui-header .ui-title {padding:0}
+.picto {width:25px;}
+.ui-content .ui-listview a.ui-btn {height:4.5em;}
+.ui-content .ui-listview .ui-li-aside {top:1.2em;}
+</style>
+</head>
+<body>
+<!--:::::::::::::::::::::::::::::::::: [ 목록맵 ] :::::::::::::::::::::::::::::::::::::::::-->
+<div id="page-able" data-role="page">
+	<div data-role="header" data-position="fixed">
+		<h1>
+			<form id="able_search">
+				<input type="search" id="search" name="search" data-mini="true" placeholder="검색어">
+			</form>
+		</h1>
+		<a href="form.htm" rel="external" data-role="button" data-icon="plus" data-mini="true" title="위치정보 등록 버튼">추가</a>
+		<a href="#popMenu" data-transition="pop" class="ui-btn ui-btn-icon-left ui-shadow ui-corner-all ui-mini ui-icon-location" data-rel="popup">보기</a>
+	</div>
+	
+	<div data-role="content" id="able_canvas"></div>
+
+	<div data-role="popup" id="popMenu">
+		<ul data-role="listview" id="sort_control">
+             <li data-icon="bars"><a href="#" data-rel="back" onclick="sorting('\\updated')">최신순</a></li>
+             <li data-icon="bars"><a href="#" data-rel="back" onclick="sorting('title')">지명순</a></li>
+             <li data-icon="location"><a href="index.html" rel="external">지도</a></li>
+         </ul>
+	</div>
+
+</div>
+<!--:::::::::::::::::::::::::::::::::: [ 목록맵 ] :::::::::::::::::::::::::::::::::::::::::-->
+<script type="text/javascript" src="cordova.js"></script>
+<script>
+function moreAble() {
+	$('#able_canvas').able('morePlace', $('#search').val(), $('#sort').val());
+}
+
+function sorting(order) {
+	localStorage.setItem('map.sort', order);
+	$('#able_canvas').able('findPlace', $('#search').val(), localStorage.getItem('map.sort'));
+}
+function onDeviceReady() {
+	if ($.mobile.phone) {
+		qmap.chkNetwork();//네트워크 상태 점검
+	}
+	$(document).delegate('#page-able', 'pageshow', onAble());
+}
+function onAbleShow() {
+	$('#able_search').submit(function(e){
+		$('#able_canvas').able('findPlace', $('#search').val());
+		$('#search').blur();
+		return false;
+	});
+	$('#able_canvas').able({sort:localStorage.getItem('map.sort')||'title'});
+	localStorage.setItem('map.type', 'able');
+}
+
+if($.mobile.phone) document.addEventListener("deviceready", onDeviceReady, false);
+$('#page-able').on('pageshow', onAbleShow());
+</script>
+</body>
+</html>

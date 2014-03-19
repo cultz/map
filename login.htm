@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
+	<link href="css/jquery.mobile-1.4.0.min.css" rel="stylesheet" />
+	<script src="js/jquery-1.9.1.min.js"></script>
+	<script src="js/jquery.mobile-1.4.0.min.js"></script>
+	<script src="js/jquery.couch.min.js"></script>
+	<script src="js/jquery.snail.min.js"></script> 
+	<title>QoLT 커뮤니티 맵핑</title>
+</head>
+<body>
+<div data-role="page" id="page-login">
+	<div data-role="header">
+		<a href="javascript:history.back();" data-role="button" data-icon="back">뒤로</a>
+		<h1>로그인</h1>
+		<a href="#page-signup" data-role="button" data-icon="edit">사용자 등록</a>
+	</div>
+	<div data-role="content" class="app">
+		<span>*사용자 동록한 이메일 주소와 비밀번호를 입력해 주세요</span>
+		<form autocomplete="off" onsubmit="return postLogin();">
+		<fieldset>
+			<input type="email" name="name" autocomplete="on" placeholder="이메일 주소를 입력해 주세요" title="이메일 주소 입력">
+			<input type="password" name="password" id="password" autocomplete="off" placeholder="비밀번호를 입력해 주세요" title="비밀번호 입력" value="">
+			<button class="ui-shadow ui-btn ui-corner-all ui-btn-icon-left ui-icon-check">로그인</button>
+	   	</fieldset>
+	   	</form>
+	</div>
+</div>
+
+<div data-role="page" id="page-signup">
+	<div data-role="header">
+		<a href="javascript:history.back();" data-role="button" data-icon="arrow-l">뒤로</a>
+		<h1>사용자 등록</h1>
+	</div>
+	<div data-role="content" class="app">
+		<form autocomplete="off" onsubmit="return postSignup();">
+		<fieldset>
+			<input type="email" name="name" placeholder="이메일 주소" title="이메일 주소 입력">
+			<input type="password" name="password"  placeholder="비밀번호" title="비밀번호 입력">
+			<input type="password" name="password2" placeholder="비밀번호 확인" title="비밀번호 확인">
+			<button class="ui-shadow ui-btn ui-corner-all ui-btn-icon-left ui-icon-check">등록</button> 
+		</fieldset>
+	   	</form>
+	</div>
+</div>
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+function postLogin() { //로그인
+	var regexEmail = /^([0-9a-zA-Z_-]+)@([0-9a-zA-Z_-]+)(\.[0-9a-zA-Z_-]+){1,2}$/i;
+	if( !regexEmail.test($('#page-login input[name="name"]').val()) ) {
+		$('#page-login input[name="name"]').select();
+		alert('등록한 이메일 주소를 정확히 입력해 주십시요');
+		return false;
+	}
+	
+	if( $('#page-login input[name="password"]').val()=='' ) {
+		$('#page-login input[name="password"]').focus();
+		alert('비밀번호를 입력해 주세요');
+		return false;
+	}
+	
+	$.couch.login({
+		name: $('#page-login input[name="name"]').val(),
+		password: $('#page-login input[name="password"]').val(),
+		success: function(res){
+			alert('로그인 되었습니다.');
+			document.location = $.p('url')==null ? 'index.html' : $.p('url');
+		},
+		error: function(err) {
+			alert('사용자 정보가 일치하지 않습니다.');
+		}
+	});
+}
+
+function postSignup() { //회원가입
+	var passed = false;
+	var regexEmail = /^([0-9a-zA-Z_-]+)@([0-9a-zA-Z_-]+)(\.[0-9a-zA-Z_-]+){1,2}$/i;
+	passed = regexEmail.test($('#page-signup input[name="name"]').val());
+	if(!passed) {
+		alert('이메일 형식이 잘못 되었습니다.');
+		$('#page-signup input[name="name"]').select();
+		return false;
+	}
+	var regexPasswd = /^([a-zA-Z0-9_\.\-\+]{6,12})+$/;
+	passed = regexPasswd.test($('#page-signup input[name="password"]').val());
+	if(!passed) {
+		alert('비밀번호 형식이 잘못 되었습니다. 영문 대소문자와 숫자, 특수문자: _(언더바), -(대시), .(도트)의 조합 6~12자 ');
+		$('#page-signup input[name="password"]').select();
+		return false;
+	}
+	
+	passed = ( $('#page-signup input[name="password"]').val() == $('#page-signup input[name="password2"]').val() );
+	if(!passed) {
+		alert('두 비밀번호가 서로 다릅니다.');
+		$('#page-signup input[name="password2"]').select();
+		return false;
+	}
+	
+
+	$.couch.signup(
+		{name: $('#page-signup input[name="name"]').val()},  $('#page-signup input[name="password"]').val(),
+		{
+			success: function(res){
+				alert('사용자 등록이 완료되었습니다.');
+				document.location = 'login.htm';
+			},
+			error: function(status, error, reason) {
+				alert('이미 등록된 사용자 이름이 있습니다.');
+			}
+		}
+	);
+	return false;
+}
+//]]>
+</script>
+</body>
+</html>

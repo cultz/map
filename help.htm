@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
+	<link href="css/jquery.mobile-1.4.0.min.css" rel="stylesheet"/>
+	<script src="js/jquery-1.9.1.min.js"></script>
+	<script src="js/jquery.mobile-1.4.0.min.js"></script>
+	<style>
+		div[data-role="content"] {max-width:1000px;}
+		figure {margin:10px;}
+		figcaption {font-weight:bold;}
+		ul {padding:15px;}
+		ul li {line-height:1.5em;padding:5px;}
+		img {width:100%;max-width:600px;}
+		.icon {width:20px;}
+		.ui-li-aside {width:70%;}
+	</style>
+	<title>입력</title>
+</head>
+<body>
+<div data-role="page">
+	
+	<div data-role="header">
+		<h1>Q-map 도움말</h1>
+		<a href="javascript:history.back();" data-role="button" data-icon="back">뒤로</a>
+	</div>
+	
+	<div data-role="content">
+		<div style="float:right"><a href="history.htm">Q-map Version 1.3.2</a></div>
+		<div style="clear:both;" data-role="collapsible" data-collapsed-icon="arrow-d" data-expanded-icon="arrow-u">
+		<h4>[1]. Q-map 서비스는?</h4>
+			<p>
+				Q-map 커뮤니티 맵핑이란?!<br/>
+				커뮤니티 맵핑이란 각 지역의 주민이나 커뮤니티를 구성하는 사람들이 지도라는 매개체를 통하여 관심지역에 관한 정보를 수집하는 과정을 통해 소통, 계획, 의사결정에 참여하는 일련의 활동을 말합니다.<br/>
+				저희 Q-map은 장애인의 접근성 개선을 위해 관련된 데이터를 수집하고 문제점을 파악하여 개선해 나가기 위한 지도 기반 커뮤니티 서비스입니다.<br/>
+				장애인 접근성 시설이 부족하거나 휠체어가 이동하기 어려운 방지턱등 장애인들이 불편해하는 정보들을 수집하고 이를 공공데이터로 활용함으로써 장애인 문제에 대한 인식 전환과 개선을 위해 2013년 출발했습니다. 
+			</p>
+		</div>
+		
+		<!--::[ 지도이용 방법 ]::::::::::::::::::::::::::-->
+		<div data-role="collapsible" data-collapsed-icon="arrow-d" data-expanded-icon="arrow-u">
+		<h4>[2]. 지도 이용 방법</h4>
+		
+			<!-- 지도 화면 -->
+			<figure>
+				<img src="img/help/index.png" alt="지도화면">
+				<figcaption>[지도 화면]</figcaption>
+			</figure>
+			<ul>
+				<li><a data-role="button" data-icon="home" data-mini="true" data-theme="b" data-inline="true">메뉴</a> 클릭시 해당 메뉴 목록 왼쪽에 표시 (장소등록/지도보기/목록보기/도움말/사용자등록/로그인)</li>
+				<li><a data-role="button" data-icon="bars" data-mini="true" data-theme="b" data-inline="true">목록</a> 클릭시 텍스트 버젼의 지도 화면을 볼수 있습니다. 시각장애인은 이 화면을 바탕으로 핸드폰에 내장되어 있는 음성안내(보이스 오버, 토크백)등의 기능을 이용할 수 있습니다.</li>
+				<li><img src="http://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-poi.png&scale=1" class="icon" alt="현재 위치 지정 아이콘">지도상에 현재 나의 위치를 표시합니다. 새로운 위치 정보를 등록하기 원하시면 이 아이콘을 클릭하거나 등록하고자 하시는 위치로 드래그 합니다.</li>
+				<li><img src="img/marker1.png" class="icon" alt="위치 정보 표시 아이콘">위치정보를 등록한 곳에 접근성 정보를 포함한 아이콘이 나타납니다. 해당 아이콘을 클릭할 경우 상세정보를 볼 수 있는 링크의 장소명이 표시된다.<br/>
+					*장애인 접근성 등급: 5가지 장애인 접근성 시설(승강기, 촉지도, 주차장, 경사로, 화장실)이 갖춰진 정보에 의해 3가지 아이콘으로 표시됩니다.<br/>
+					<img src="img/marker1.png" class="icon" alt="위치정보 표시 아이콘 : 우수"> 우수:장애인 시설물 4~5개 <br/>
+					<img src="img/marker2.png" class="icon" alt="위치정보 표시 아이콘 : 보통"> 보통:장애인 시설물 2~3개 <br/>
+					<img src="img/marker3.png" class="icon" alt="위치정보 표시 아이콘: 미흡"> 미흡:장애인 시설물 0~1개 <br/>	
+				</li>
+				<li><div style="width:200px;"><input type="search" data-inline="true" placeholder="지도검색" title="지도 검색 입력"></div>지도 검색창을 통해 해당 위치명을 검색할 수 있습니다. 장소명이나 태그명을 입력하여 검색합니다. 해당 검색어의 장소명이나 태그명 검색 결과를 볼 수 있습니다.
+					<ul>
+						<li>태그명 검색 : #검색어 </li>
+						<li>사용자 검색 : @검색어 </li>
+						<li>기본 검색 : 위치명 + 태그명 </li>
+					</ul>
+				</li>
+			</ul>
+			
+			<figure>
+				<img src="img/help/index.text.png" alt="지도화면">
+				<figcaption>[텍스트 지도 화면]</figcaption>
+			</figure>
+			<ul>
+				<li>시각장애인용 음성안내 어플을 이용하여 사용할 수 있도록 텍스트 목록 형태의 지도를 나타냅니다.</li>
+				<li>안드로이드 음성안내 : 접근성 메뉴 > TalkBack 켜기, 웹 접근성 향상(웹 스크립트 설치) 허용</li>
+				<li>아이폰 음성안내: 손쉬운 사용 > VoiceOver 켜기 <br/>
+					*기타 자세한 사용법은 해당 제조사 메뉴얼을 참고하시기 바랍니다.
+				</li>
+			</ul>
+			
+			<!-- 메뉴 설명 -->
+			<figure>
+				<img src="img/help/index.panel.png" alt="메뉴 설명">
+				<figcaption>[메뉴 설명]</figcaption>
+			</figure>
+			
+			<ul>
+				<li>지도보기 : 맵핑된 지도 검색 및 위치를 찾는 지도 표시</li>
+				<li>목록보기: 텍스트 버젼의 지도를 표시</li>
+				<li>위치등록 : 맵핑하고자 하는 위치 정보를 등록하는 메뉴 [로그인 필요]</li>
+				<li>내 등록위치 : 내가 등록한 위차 확인 [로그인 필요]</li>
+				<li>도움말: 현재 화면과 같은 도움말 표시</li>
+				<li>사용자 등록: 사용자 등록 화면</li>
+				<li>로그인: 사용자 로그인 화면</li>
+				<li><a data-role="button" data-mini="true" data-theme="c" data-inline="true" data-icon="arrow-l">닫기</a>: 왼쪽 메뉴 닫기</li>
+			</ul>
+			
+			<!-- 상세 화면 -->
+			<figure>
+				<img src="img/help/view.png" alt="상세화면">
+				<figcaption>[상세 화면]</figcaption>
+			</figure>
+			<ul>
+				<li>기본정보 : 해당 장소의 주소와 현재 위치에서의 거리,방위각 정보를 나타내며 장소 대한 설명글을 불 수 있습니다.<br>
+					- 접근성 시설 설치현황 : 장애인 접근성 시설 5가지 항목( 승강기, 촉지도, 주차장, 경사로, 화장실)의 정보를 확인 할 수 있습니다.<br/> 설치된 항목을 체크하면 선택한 항목은 파란색으로 표시됩니다.<br />
+					- <img src="img/help/icon-alert.png" class="icon" align="top" alt="오류정정 신고 아이콘">정정요청 : 잘못된 내용이 있으면 해당 내용을 입력하여 요청하면 등록한 사용자가 확인할 수 있습니다. [로그인 필요]<br/>
+					* 정정요청한 내용은 최초 위치정보 등록자가 내용을 검토하고 오류내용을 삭제할 수 있습니다.
+				</li>
+				<li>접근성정보 : 해당 위치나, 건물에 대해 접근성 관련된 정보를 추가할 수 있습니다. [위치 등록자]</li>
+				<li>사진정보: 해당 위치나, 건물에 대해 사진 정보를 추가할 수 있습니다. [위치 등록자]</li>
+				<li>리뷰정보: 해당 위치나, 건물에 대해 리뷰 정보를 추가할 수 있습니다. [로그인 필요]</li>
+				<li><a data-role="button" data-icon="grid" data-mini="true" data-theme="b" data-inline="true">지도</a>버튼 클릭시 초기화면의 지도를 볼 수 있습니다.</li>
+			</ul>
+		
+			
+			<!-- 상세 화면 -->
+			<figure>
+				<img src="img/help/photo.png" alt="시잔등록화면">
+				<figcaption>[사진등록 화면]</figcaption>
+			</figure>
+			<ul>
+				<li><a data-role="button" data-icon="plus" data-mini="true" data-inline="true">추가</a>버튼을 클릭하여 올리고자 하는 사진을 선택합니다. 사진이 등록된 후 해당 사진을 선택하면 사진 설명글을 입력할 수 있습니다. 모든 사진 정보를 입력 한 후 
+				<a data-role="button" data-icon="edit" data-mini="true" data-theme="b" data-inline="true">올리기</a> 버튼을 눌러 사진 정보를 반영합니다.</li>
+			</ul>
+			
+		</div>
+		<!--::[ 지도 이용방법 ]:::::::::::::::::::::::::::::::-->
+		
+
+		<!--::[ 위치정보 등록 ]::::::::::::::::::::::::::-->
+		<div data-role="collapsible" data-collapsed-icon="arrow-d" data-expanded-icon="arrow-u">
+			<h4>[3]. 위치정보 등록</h4>
+			<!-- 메뉴 설명 -->
+			<figure>
+				<img src="img/help/form.png" alt="위치등록 화면">
+				<figcaption>[위치등록 화면]</figcaption>
+			</figure>
+			<ul>
+				<li>주소 : 현재 위치의 주소가 자동으로 입력된다. 주소가 다르다면 주소를 수정하여 위치를 조정할 수 있습니다.</li>
+				<li>장소명 : 등록하고자 하는 위치의 장소명을 입력합니다. 예) 강남구 면허시험장 민원실</li>
+				<li>태그 : 등록하고자 하는 위치의 태그(분류 기준)명을 입력한다. 사용자들이 찾기 쉽도록 태그명 검색을 통해 이용할 수 있습니다.</li>
+				<li>위치설명 : 등록하고자 하는 장소에 대한 설명글을 입력합니다.</li>
+			</ul>
+		</div>
+		<!--::[ 위치정보 등록 ]::::::::::::::::::::::::::::::::-->
+		
+		
+		<!--::[ 사용자 등록 및 이용절차 ]::::::::::::::::::::::::::-->
+		<div data-role="collapsible" data-collapsed-icon="arrow-d" data-expanded-icon="arrow-u">
+			<h4>[4]. 사용자 등록 및 로그인</h4>
+			
+			<!-- 회원등록 화면 -->
+			<figure>
+				<img src="img/help/signup.png" alt="사용자 등록">
+				<figcaption>[회원등록 화면]</figcaption>
+			</figure>
+			<ul>
+				<li>Q-map계정은 이메일 주소를 아이디로 활용하여 사용하도록 하였으며 사용자 등록 후 해당 위치 정보를 등록 할 수 있습니다.<br/>
+					*영문 대소문자와 숫자, 특수문자 _(언더바) -(대시) .(도트)  조합 6~12자
+				</li>
+			</ul>
+			
+			<!-- 로그인 화면 -->
+			<figure>
+				<img src="img/help/login.png" alt="로그인 ">
+				<figcaption>[로그인 화면]</figcaption>
+			</figure>
+			<ul>
+				<li>등록한 사용자 이메일 주소와 비밀번호를 입력</li>
+			</ul>
+			
+		</div>
+		<!--::[ 사용자 등록 및 이용절차 ]::::::::::::::::::::::::::-->
+		
+		<div data-role="collapsible" data-collapsed-icon="arrow-d" data-expanded-icon="arrow-u">
+			<h4>[5]. 이용안내 및 문의</h4>
+			<ul data-role="listview" data-inset="true" data-theme="d">
+			    <li>상 호<span class="ui-li-aside">QoLT산업기술지원센터</span></li>
+			    <li>싸이트<span class="ui-li-aside">http://www.qolt.kr</span></li>
+			    <li>책임자<span class="ui-li-aside">이상묵 센터장</span></li>
+			    <li>담당자<span class="ui-li-aside">이민정 연구원</span></li>
+			    <li>문의처<span class="ui-li-aside">02-877-0373</span></li>
+			</ul>
+		</div>
+	</div>
+</div>
+</body>
+</html>

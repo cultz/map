@@ -1,4 +1,4 @@
-qmap
+Qmap
 ====
 
 QoLT Commpnity Mapping

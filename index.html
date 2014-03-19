@@ -1,1 +1,91 @@
-Qmap
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="format-detection" content="telephone=no" />
+<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
+<link rel="stylesheet" type="text/css" href="css/jquery.mobile-1.4.0.min.css" />
+<script src="js/jquery-1.9.1.min.js"></script>
+<script src="js/jquery.mobile-1.4.0.min.js"></script>
+<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDht04F5GPPaHua_ZLIEdWhCDCt9SCOaA8&sensor=true&language=ko"></script>
+<script src="js/markerclusterer.min.js"></script>
+<script src="js/jquery.couch.min.js"></script>
+<script src="js/jquery.snail.min.js"></script>
+<script src="cordova.js"></script>
+<title>QoLT 커뮤니티 맵핑</title>
+<style>
+#gmap_canvas{min-height:inherit;overflow:hidden;padding:0;}
+#gmap_canvas .gm-style a.info-link{color:#2f3e46;font-weight:bold;text-decoration:none;}
+.ui-header .ui-title{padding:0}
+</style>
+</head>
+<body>
+<!--:::::::::::::::::::::::::::::::::: [ 구글맵 ] :::::::::::::::::::::::::::::::::::::::::-->
+<div data-role="page" class="pages" id="page-gmap">
+	<div id="panel" data-role="panel">
+		<ul id="sidemenu" data-role="listivew" data-icon="false" data-inset="true" data-divider-theme="a">
+			<li data-role="list-divider">맵핑 메뉴</li>
+			<li data-icon="location"><a href="index.html" rel="external" title="이미지 지도 보기 메뉴">지도보기</a></li>
+			<li data-icon="bars"><a href="index.htm" rel="external" title="텍스트 목록 보기 메뉴">목록보기</a></li>
+			<li data-icon="edit"><a href="form.htm" rel="external" title="새로운 위치정보 등록 메뉴">위치등록</a></li>
+			<li data-icon="info"><a href="help.htm" rel="external" title="커뮤니티맵핑 도움말 메뉴">도움말</a></li>
+			<li data-role="list-divider">사용자 메뉴</li>
+			<li><a href="login.htm#page-signup" rel="external" title="사용자 등록 메뉴">사용자 등록</a></li>
+			<li><a href="login.htm" rel="external" title="로그인 메뉴">로그인</a></li>
+		</ul>
+		<div>Q-map Copyright QoLT 2013</div>
+	</div>
+	<div data-role="header" data-position="fixed">
+		<a href="#panel" title="왼쪽 메뉴 펼치기 - 시각장애인은 다음의 목록 버튼을 선택하세요" class="ui-btn ui-btn-icon-left ui-shadow ui-corner-all ui-mini ui-icon-bullets">메뉴</a>
+		<h1><form id="gmap_search"><input type="search" id="search" name="search" data-mini="true" data-shadow="false" placeholder="검색어를 입력하세요"></form></h1>
+		<a href="index.htm" rel="external" title="텍스트 목록 보기 버튼" class="ui-btn ui-btn-icon-left ui-shadow ui-corner-all ui-mini ui-icon-bars">목록</a>
+	</div>
+	<div data-role="content" id="gmap_canvas"></div>
+</div>
+<!--:::::::::::::::::::::::::::::::::: [ 구글맵 ] :::::::::::::::::::::::::::::::::::::::::-->
+<script type="text/javascript">
+function findByUser(username) {
+ 	$('#panel').panel('close');
+ 	$('#search').val(username).submit();
+}
+function onDeviceReady() {
+	if($.mobile.phone) {
+		qmap.chkNetwork();//네트워크 상태 점검
+		navigator.splashscreen.hide();//스플레쉬 화면 가리기
+	}
+	$(document).delegate(document, 'pageinit', onPageInit())
+	$(document).delegate('#page-gmap', 'pageshow', onGmapShow());
+}
+function onPageInit() {
+	qmap.chkLogin(function(sess){
+		if(sess.ok && sess.userCtx.name) {
+			$('#sidemenu li:last-child').remove();//로그인
+			$('#sidemenu li:last-child').remove();//사용자 등록
+			$('#sidemenu').append('<li data-icon="star"><a href="#" onclick="findByUser(\'@'+sess.userCtx.name+'\')">내 등록위치</a></li>');
+			$('#sidemenu').append('<li><a href="#" onclick="qmap.userLogout()">로그아웃 ['+sess.userCtx.name+']</a></li>');
+		}
+		$('#sidemenu').listview().listview('refresh');
+	});
+}
+function onGmapShow() {
+	$('#gmap_search').submit(function(e){
+		$('#gmap_canvas').gmap('findPlace', $('#search').val());
+		$('#search').blur();
+		return false;
+	});
+	
+	if($.p('search')) {
+		$('#gmap_canvas').gmap({query:qmap.parseKeyword($.p('search'))});
+	} else {
+		$('#gmap_canvas').gmap({limit:3000});
+	}
+	localStorage.setItem('map.type', 'gmap');
+}
+if($.mobile.phone) {
+	document.addEventListener("deviceready", onDeviceReady, false);
+} 
+$(document).on('pageinit', function(){onPageInit();});
+$('#page-gmap').on('pageshow',function(){onGmapShow()});
+ </script>
+</body>
+</html>

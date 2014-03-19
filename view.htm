@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height">
+	<link rel="stylesheet" href="css/jquery.mobile-1.4.0.min.css">
+	<script src="js/jquery-1.9.1.min.js"></script>
+	<script src="js/jquery.mobile-1.4.0.min.js"></script>
+	<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDht04F5GPPaHua_ZLIEdWhCDCt9SCOaA8&sensor=true&language=ko&libraries=geometry"></script>
+	<script src="js/jquery.couch.min.js"></script>
+	<script src="js/jquery.snail.min.js"></script>
+	<script src="cordova.js"></script> 
+	<title>위치 상세정보</title>
+	<style>
+	#facility .ui-btn {padding:.5em .8em;}
+	#data-content, #data-report {border:1px solid #ccc; padding:5px; background-color:#fff;overflow:hidden;}
+	#data-access ul {clear:both;}
+	.ui-collapsible, .ui-grid-a {clear:both;}
+	.ui-listview .ui-li-aside {top:.7em;right:1em;overflow:hidden;}
+	
+	#photo-editor, .photo_editor {clear:both;}
+	#photo-editor {margin:0;height:0;list-style:none;}
+	#photo-editor li, .photo-item {width:28%;height:auto;margin:5px;padding:5px;float:left;border:1px solid #ccc;max-width:400px;max-height:400px;}
+	#photo-editor li img, .photo-item img{width:100%;}
+	.photo-editor {overflow:auto; padding:.5em;border:2px dotted #ccc;min-height:150px;}
+	</style>
+</head>
+<body>
+
+<!--:::::::::::::::::::::::::::::::::::::::: [ 상세 페이지 ]:::::::::::::::::::::::::::::::::::::::-->
+<div id="page-view" data-role="page">
+	<!--:::::::::::::::::::::::::::::::::: [ 사이드 메뉴 ] :::::::::::::::::::::::::::::::::::::::::-->
+	<div id="panel" data-role="panel" class="jqm-nav-panel jqm-quicklink-panel ui-panel">
+		<ul id="sidemenu" data-role="listivew" data-icon="false" data-inset="true" data-divider-theme="a" title="메뉴목록">
+			<li data-role="list-divider">맵핑 메뉴</li>
+			<li data-icon="edit"><a href="form.htm" rel="external" title="새로운 위치정보 등록 메뉴">위치등록</a></li>
+			<li data-icon="location"><a href="index.html" rel="external" title="이미지 지도 보기 메뉴">지도보기</a></li>
+			<li data-icon="bars"><a href="index.htm" rel="external" title="텍스트 목록 보기 메뉴">목록보기</a></li>
+			<li data-icon="info"><a href="help.htm" rel="external" title="커뮤니티맵핑 도움말 메뉴">도움말</a></li>
+			<li data-role="list-divider">사용자 메뉴</li>
+			<li><a href="login.htm#page-signup" rel="external" title="사용자 등록 메뉴">사용자 등록</a></li>
+			<li><a href="login.htm" rel="external" title="로그인 메뉴">로그인</a></li>
+		</ul>
+		<div>Q-map Copyright QoLT 2013</div>
+	</div>
+	<div data-role="header">
+		<a href="#panel" title="왼쪽 메뉴 펼치기 - 시각장애인은 다음의 목록 버튼을 선택하세요" class="ui-btn ui-btn-icon-left ui-shadow ui-corner-all ui-mini ui-icon-bullets">메뉴</a>
+		<!--
+		<a href="#" onclick="qmap.viewMap()" class="ui-btn ui-btn-icon-left ui-shadow ui-corner-all ui-mini ui-icon-back">목록</a>
+		-->
+		<h1>위치정보 - 상세</h1>
+	</div>
+	<div data-role="content">
+		<div>
+			<ul id="data-position" data-role="listview" data-inset="true"></ul>	
+			<div id="facility" data-role="controlgroup" data-type="horizontal" data-mini="true">
+			    <a href="#" class="ui-btn ui-corner-all"><img src="img/a-icon1.png" alt="승강기" class="picto"><br/>승강기</a>
+			    <a href="#" class="ui-btn ui-corner-all"><img src="img/a-icon2.png" alt="촉지도" class="picto"><br/>촉지도</a>
+			    <a href="#" class="ui-btn ui-corner-all"><img src="img/a-icon3.png" alt="주차장" class="picto"><br/>주차장</a>
+			    <a href="#" class="ui-btn ui-corner-all"><img src="img/a-icon4.png" alt="경사로" class="picto"><br/>경사로</a>
+			    <a href="#" class="ui-btn ui-corner-all"><img src="img/a-icon5.png" alt="화장실" class="picto"><br/>화장실</a>
+			</div>
+			<div id="data-street" data-role="popup" style="min-width:300px;min-height:400px;max-width:100%;max-height:100%;">
+				<a href="#" data-role="button" data-rel="back" data-icon="delete" data-iconpos="notext" class="ui-btn-right">닫기</a>
+			</div>
+			<div id="data-content" class="ui-corner-all"><pre></pre></div>
+		</div>
+		
+		<div style="margin:.4em 0 .4em">
+  			<div class="ui-bar ui-bar-a" style="padding:.6em 1em"><h3 class="data-files">사진 정보</h3></div>
+  			<div id="data-files" class="ui-body ui-body-a">등록된 사진이 없습니다.</div>
+		</div>
+		
+		<div id="data-access" data-role="collapsible" data-collapsed="false">			
+			<h3>접근성 정보</h3>
+			<ul data-role="listview" data-split-icon="delete"></ul>
+		</div>
+		<div id="data-review" data-role="collapsible" data-collapsed="false">
+			<h3>댓글 정보</h3>
+			<ul data-role="listview" data-split-icon="delete"></ul>
+		</div>
+		<fieldset class="ui-grid-a">
+	   		<div class="ui-block-a"></div>
+	   		<div class="ui-block-b"></div>
+	   	</fieldset>
+	</div>
+	
+	<div data-role="popup" id="popMenu">
+		<ul data-role="listview" id="view_control">
+			<li data-icon="edit"><a href="#" onclick="goForm()">수정</a></li>
+            <li data-icon="delete"><a href="#" onclick="delDoc()">삭제</a></li>
+		</ul>
+	</div>
+</div>
+<!--:::::::::::::::::::::::::::::::::::::::: [ 접근성 추가 페이지 ]:::::::::::::::::::::::::::::::::::::::-->
+<div id="page-access" data-role="page" >
+	<div data-role="header">
+		<h1>접근성 정보</h1>
+		<a data-rel="back" data-role="button" data-icon="back">취소</a>
+		<a href="#" onclick="addAccess()" data-role="button" data-icon="check">저장</a>
+	</div>
+	<div data-role="content">
+		<textarea name="comment" id="comment" placeholder="접근성 정보를 입력해주세요" title="접근성 정보를 입력해 주세요"></textarea>
+	</div>
+</div>
+<!--:::::::::::::::::::::::::::::::::::::::: [ 오류신고 페이지 ]:::::::::::::::::::::::::::::::::::::::-->
+<div id="page-report" data-role="page">
+    <div data-role="header">
+    	<h1>오류 수정 신청</h1>
+    	<a data-rel="back" data-role="button" data-icon="back">취소</a>
+		<a href="#" onclick="addReport()" data-role="button" data-icon="check">저장</a>
+    </div>
+	<div data-role="content">
+		<textarea name="report" id="report" placeholder="오류 정보를 입력해 주세요" title="오류 정보를 입력해 주세요"></textarea>
+	</div>
+</div>	
+<!--:::::::::::::::::::::::::::::::::::::::: [ 사진 추가 페이지 ]:::::::::::::::::::::::::::::::::::::::-->
+<div id="page-files" data-role="page">
+	<div data-role="header">
+		<h1>사진 추가</h1>
+		<a data-rel="back" data-role="button" data-icon="back" title="취소">취소</a>
+		<a href="#" onclick="setFile()" data-role="button" data-icon="edit" title="추가된 사진을 업데이트합니다.">저장</a>
+	</div>
+	<form method="POST" enctype="multipart/form-data">
+	<div data-role="content" class="app">
+		<div class="photo-editor"><ul id="photo-editor"></ul></div>
+		<textarea cols="40" rows="8" name="desc" id="desc" placeholder="사진을 선택한 후 설명을 입력해주세요" title="선택된 사진의 설명을 입력해 주세요"></textarea>
+		<a href="#" onclick="get_photo();" data-role="button" data-icon="plus" title="사진을 추가하려면 선택하세요">사진 추가</a>
+		*해상도가 높은 사진은 등록하는데 다소 시간이 걸릴 수 있습니다.
+	</div>
+	</form>
+</div>
+
+<!--:::::::::::::::::::::::::::::::::::::::: [ 댓글 추가 페이지 ]:::::::::::::::::::::::::::::::::::::::-->
+<div id="page-review" data-role="page">
+	<div data-role="header">
+		<h2>댓글 달기</h2>
+		<a data-rel="back" data-role="button" data-icon="back" title="취소">취소</a>
+		<a href="#" onclick="addReview();" data-role="button" data-icon="check" title="댓글을  추가합니다.">저장</a>
+	</div>
+	<div data-role="content">
+		<textarea name="review" id="review" placeholder="댓글을 입력해 주세요" title="댓글을 입력해 주세요"></textarea>
+	</div>
+</div>
+
+
+<script>
+var doc = {};
+function goView() {
+	document.location = 'view.htm?id='+$.p('id');
+}
+function goForm() {
+	document.location = 'form.htm?id='+$.p('id');	
+}
+
+//공유
+function share(subject, title, content) {
+	window.share.choose(subject, title, content);
+}
+
+//편의시설 설정
+/*function setAccommo() {
+	var accommo = [];
+	$('#facility input[type=checkbox]').each(function(i) {
+		accommo[i] = $(this).prop("checked") ? '1' : '0';
+	});
+	$.extend(doc, {option: accommo});
+	qmap.setDoc(doc, {success: function(data){if(data.ok) console.log(data);}});
+}*/
+
+//오류내용 추가
+function addReport() {
+	var tmp = doc.report || [];
+	newport = {};
+	if($('textarea#report').val()) {
+		newport['text'] = $('textarea#report').val();
+		newport['username'] = qmap.sess.userCtx.name;
+		tmp.push( newport );
+		$.extend(doc, {report: tmp});
+		qmap.setDoc(doc, {success: function(data){if(data.ok) document.location='view.htm?id='+data.id;}});
+	}
+}
+function delReport(idx) {
+	if(confirm('해당 글을 삭제하시겠습니까?')) {
+		doc.report.splice(idx, 1);
+		qmap.setDoc(doc, {success: function(data){if(data.ok) document.location='view.htm?id='+data.id;}});
+	}
+}
+
+//접근성 정보
+function addAccess() {
+	var tmp = doc.access || [];
+	if( $('#comment').val() ) {
+		tmp.push($('#comment').val());
+		$.extend(doc, {access: tmp});
+		qmap.setDoc(doc, {success: function(data){if(data.ok) document.location='view.htm?id='+data.id;}});
+	}
+}
+function delAccess(idx) {
+	if(confirm('해당 글을 삭제하시겠습니까?')) {
+		doc.access.splice(idx, 1);
+		qmap.setDoc(doc, {success: function(data){if(data.ok) document.location='view.htm?id='+data.id;}});
+	}
+}
+
+//댓글 추가
+function addReview() {
+	var tmp = doc.review || [];
+	newview = {};
+	if($('textarea#review').val()) {
+		newview['text'] = $('textarea#review').val();
+		newview['username'] = qmap.sess.userCtx.name;
+		tmp.push( newview );
+		$.extend(doc, {review: tmp});
+		qmap.setDoc(doc, {success: function(data){if(data.ok) document.location='view.htm?id='+data.id;}});
+	}
+}
+function delReview(idx) {
+	if(confirm('댓글을 삭제하시겠습니까?')) {
+		doc.review.splice(idx, 1);
+		qmap.setDoc(doc, {success: function(data){if(data.ok) document.location='view.htm?id='+data.id;}});
+	}
+}
+
+//이미지 처리
+function setFile() {
+	$.mobile.loading("show");
+	qmap.getDoc($.p('id'), {
+		success: function(doc) {
+			$.mobile.loading("hide");
+			var tmp = doc._attachments || {};
+			$('#photo-editor img').each(function(){ 
+				tmp[this.name].alt = this.alt;
+			});
+			doc.attachments = tmp;
+			qmap.setDoc(doc, {success: function(data){if(data.ok) document.location='view.htm?id='+data.id; }});
+		}
+	});
+}
+function delFile(idx) {
+	if(confirm('사진을 삭제하시겠습니까?')) {
+		doc.attachments.splice(idx, 1);
+		qmap.setDoc(doc, {success: function(data){if(data.ok) document.location='view.htm?id='+data.id;}});
+	}
+}
+function getFile(files) {
+	var i=0, popup='', photo='', editor='';
+	for(file in files) {
+		if(file.match(/(jpg|jpeg|png|gif)$/gi)) {
+			i++;
+			var alt = files[file].alt || '';
+			photo += '<div class="photo-item"><a href="#popupList'+i+'" data-rel="popup" data-position-to="window" data-transition="fade"><img src="'+qmap.getPath('image')+'/'+doc._id+'/'+file+'?resize=600" alt="'+alt+'" title="'+alt+'"></a></div>';
+			popup += '<div data-role="popup" id="popupList'+i+'" data-overlay-theme="a" data-corners="false">';
+			popup += '<a href="#" id="button'+i+'" data-rel="back" class="ui-btn ui-btn-icon-left ui-mini ui-icon-delete ui-btn-right">닫기</a>';
+			popup += '<img src="'+qmap.getPath('image')+'/'+doc._id+'/'+file+'?resize=600" alt="'+alt+'" style="width:100%" onclick="history.back();"><p class="alt">'+alt+'</p>';
+			editor+= '<li><img src="'+qmap.getPath('image')+'/'+doc._id+'/'+file+'?resize=600" alt="'+alt+'" title="'+alt+'" name="'+file+'" tag="" onclick="attach_description(this);"></li>';
+		}
+	}
+	return {photo:photo, popup:popup, editor:editor, length:i};
+}
+
+//문서 삭제
+function delDoc() {
+	if(confirm('등록한 위치정보를 삭제하시겠습니까?')) {
+		qmap.dropDoc(doc, {success: function(data){if(data.ok) qmap.viewMap();}});
+		return true;
+	} else {
+		return false;
+	}
+}
+
+//이미지 업로드
+function uploadPhoto(fp) {
+	
+	var file = fp.files[0]; //console.log('File:'+file+',FileName:'+file.name + ',FileSize:'+file.size+',FileType:'+file.type);
+	if( !file ) { 
+		alert('파일업로드를 지원하지 않습니다.');return;
+	}
+	
+	if( (file.type && file.type.match(/(jpg|jpeg|png|gif)$/gi) === false) || file.name.match(/(jpg|jpeg|png|gif)$/gi) === false ) {
+		alert('이미지 파일만 선택 가능합니다. :' + file.type || file.name );
+		return;
+	}
+	$.mobile.loading("show");
+	
+    $.ajax(qmap.getPath()+'/'+$.p('id')+'/'+file.name+'?rev='+doc._rev, {
+    	type: 'PUT',
+    	data: file,
+    	processData: false,
+    	contentType: file.type||'image/jpeg',
+    	success: function(data) {
+    		var result = JSON.parse(data);
+    		if(result.ok) {
+    			doc._rev = result.rev;
+    			$('#photo-editor').append('<li><img src="'+qmap.getPath('image')+'/'+result.id+'/'+file.name+'?resize=300" name="'+file.name+'" tag="" onclick="attach_description(this);" /></li>');
+    			$.mobile.loading("hide");
+    		}
+    	},
+    	error: function(xhr, err) {
+			alert('[오류] : 데이터를 가져오는데 실패하였습니다.');
+			console.log("readyState: " + xhr.readyState + "status: " + xhr.status + xhr.responseText);
+		}
+    });
+}
+
+//코멘트 적용
+function attach_description(img) {
+	$('#photo-editor li').each(function(){
+		$(this).removeClass('on');
+	});
+	$(img).parent('li').addClass('on');
+	$('#desc').val($(img).attr('alt'));
+	$('#desc').focus();
+}
+
+
+function get_photo() {
+	$('input[name=photo]').click();
+}
+
+function getStreet(data, status) {
+	if (data && status == google.maps.StreetViewStatus.OK) {
+		var panorama = new google.maps.StreetViewPanorama(document.getElementById("data-street"));
+		panorama.setPano(data.location.pano);
+		panorama.setPov({heading: 270, pitch: 0});
+		panorama.setVisible(true);
+		$('#data-position').append('<li><a href="#data-street" data-role="button" data-rel="popup" data-position-to="window">거리뷰</a></li>');
+		$('#data-position').listview().listview('refresh');
+		//$('#page-view div[data-role="content"]').prepend('<a href="#data-street" data-role="button" data-rel="popup" data-position-to="window" style="float:right">거리뷰</a>');
+		//$('#data-street').append('<a href="#" data-role="button" data-rel="back" data-icon="delete" data-iconpos="notext" class="ui-btn-right">닫기</a>');
+		//$('#data-street a[data-role="button"]').button();
+		$('#data-street').popup();//팝업으로 만들어줌
+	}
+}
+
+function onViewShow() {
+	qmap.getDoc($.p('id'), {
+		cache: Math.floor(new Date().getTime()/1000),
+		success: function(data){
+			doc = data;
+			$('#page-view [data-role="header"] h1').text(doc.title);
+			if(doc.tel) $('#data-position').append('<li>전화번호<span class="ui-li-aside">'+doc.tel+'</span></li>');
+			if(doc.homepage) $('#data-position').append('<li>홈페이지<span class="ui-li-aside">'+doc.homepage+'</span></li>');
+			$('#data-position').append('<li>'+doc.address.replace('대한민국 ','')+'</li>');
+			//$('#data-tags').append('<div id="tagslist" title="태그  목록"></div>');
+			$('#data-content pre').append('<p>'+doc.content+'</p>');
+			
+			var files = getFile(doc.attachments);
+			if(files.length) {
+				$('#data-files').html(files.photo).append(files.popup);
+				$('#photo-editor').append(files.editor);
+			}
+			
+			//편의시설
+			$('#facility a').each(function(i) { if(doc.options && doc.options[i]=='1') $(this).css({'background':'#38c','color':'#fff','text-shadow':'0 1px 0 #059'}); });
+			//태그
+			if(doc.tags) {
+				$('#data-position').append('<li>태그<span class="ui-li-aside" id="tagslist"></span></li>');
+				$((doc.tags||'').split(',')).each(function(){if(this!='') $('#tagslist').append('<span class="tag" title="태그:'+this+'">'+this+'</span>'); });
+			}
+			//오류내용
+			if(doc.report && doc.report.length) {
+				$('#data-content').append('<ul id="data-report" data-role="listview" data-inset="true"  data-split-icon="delete"></ul>');
+				$(doc.report).each(function(){ if(this.text) $('#data-report').append('<li><a>'+this.text+'</a></li>'); });
+			}
+			//접근성 정보
+			if(doc.access) $('#data-access h3 a').append(' ('+doc.access.length+')');
+			$(doc.access).each(function(index){ $('#data-access ul').append('<li data-icon="false"><a>'+this+'</a></li>');});
+			
+		
+			qmap.chkLogin(function(sess) {
+    			qmap.sess = sess;
+    			if(sess.ok && sess.userCtx.name) {//로그인한 경우
+    				$('#sidemenu li:last-child').remove();//로그인
+					$('#sidemenu li:last-child').remove();//사용자 등록
+					$('#sidemenu').append('<li><a href="#" onclick="qmap.userLogout();">로그아웃 ['+sess.userCtx.name+']</a></li>');
+					
+					if($.inArray('_admin', sess.userCtx.roles)!== -1 || $.inArray('manager', sess.userCtx.roles)!== -1 || sess.userCtx.name == doc.username) { //본인 게시 마커인 경우
+						$('h3.data-files').append('<a href="#page-files" class="ui-btn ui-btn-right ui-btn-inline ui-btn-icon-left ui-corner-all ui-mini ui-icon-edit" style="margin-top:-.1em;">추가</a>');
+						//오류 요청 리스트 
+						$('#data-report li').append('<a>삭제</a>').click(function(evt){ delReport( $(evt.target).parents('li').index() ); });
+						//접근성 정보 추가 버튼
+						$('#data-access .ui-collapsible-content').prepend('<a href="#page-access" class="ui-btn ui-btn-icon-left ui-corner-all ui-mini ui-icon-edit" style="float:right;margin-top:-3.9em;">추가</a>');
+						//접근성 정보 삭제 버튼
+						$('#data-access li').append($('<a>삭제</a>').click(function(evt){ delAccess( $(evt.target).parents('li').index() );	}));
+						
+						//수정 삭제 버튼
+						//$('#page-view div[data-role="content"] .ui-block-a').append('<a class="ui-btn ui-btn-icon-left ui-shadow ui-corner-all ui-mini ui-icon-delete">삭 제</a>').click(function(evt){delDoc();});
+						//$('#page-view div[data-role="content"] .ui-block-b').append('<a class="ui-btn ui-btn-icon-left ui-shadow ui-corner-all ui-mini ui-icon-edit">수 정</a>').click(function(evt){goForm();});
+						//<a href="#popMenu" data-transition="pop" class="ui-btn ui-btn-icon-left ui-shadow ui-corner-all ui-mini ui-icon-location" data-rel="popup">보기</a>
+				    	//$('#page-view div[data-role="header"]').append('<div data-role="controlgroup" data-type="horizontal" class="ui-mini ui-btn-right">');
+						//$('#page-view div[data-role="header"] div[data-role="controlgroup"]').append('<a class="ui-btn ui-btn-icon-left ui-shadow ui-corner-all ui-mini ui-icon-delete">삭제</a>').click(function(evt){delDoc();});
+						//$('#page-view div[data-role="header"] div[data-role="controlgroup"]').append('<a class="ui-btn ui-btn-icon-left ui-shadow ui-corner-all ui-mini ui-icon-edit">수정</a>').click(function(evt){goForm();});
+						$('#page-view div[data-role="header"]').append('<a href="#popMenu" data-transition="pop" data-rel="popup" class="ui-btn ui-btn-right ui-btn-icon-left ui-shadow ui-corner-all ui-mini ui-icon-gear">편집</a>');					
+					
+					} else {
+						//오류 수정 요청 등록
+						$('#page-view div[data-role="header"]').append('<a href="#page-report" class="ui-btn ui-btn-right ui-btn-icon-left ui-shadow ui-corner-all ui-mini ui-icon-alert">정정 요청</a>');
+					}
+					//댓글 추가 버튼
+					$('#data-review .ui-collapsible-content').prepend('<a href="#page-review" class="ui-btn ui-btn-icon-left ui-corner-all ui-mini ui-icon-edit" style="float:right;margin-top:-3.9em;">추가</a>');
+					if(doc.review) $('#data-review h3 a').append(' ('+doc.review.length+')');
+					console.log(doc.review);
+					$(doc.review).each(function(index){
+						if($.inArray('_admin', sess.userCtx.roles) > -1 || $.inArray('manager', sess.userCtx.roles) > -1 || sess.userCtx.name == this.username) {
+							$('#data-review ul').append('<li data-incon="falsegkrry"><a href="#">'+this.text+'</a><a href="#" onclick="delReview('+index+')">삭제</a></li>');
+						} else {
+							$('#data-review ul').append('<li>'+this.text+'<span class="ui-li-count">'+(this.username||'guest').substr(0, 4)+'***</span></li>');	
+						}
+					});
+						
+    			}
+    			//$('[data-role="button"]').button();
+				$('[data-role="popup"]').popup();
+				$('#sidemenu').listview().listview('refresh');
+				$('[data-role="listview"]').listview().listview('refresh');
+	    	});
+	
+			qmap.getGeoInformation(new google.maps.LatLng(doc.position[0], doc.position[1]), function(geo){ //현재 위치와 거리 계산
+				$('#data-position').append('<li>위치<span class="ui-li-aside">'+geo.distance+' / '+geo.heading+'º</span>');
+				$('#data-position').listview().listview('refresh');
+				$('#data-position a').button();
+				new google.maps.StreetViewService().getPanoramaByLocation(new google.maps.LatLng(doc.position[0], doc.position[1]), 50, getStreet);
+			});
+			//doc.count = (doc.count||0) + 1;
+			//qmap.setDoc(doc);
+			$.mobile.loading("hide");
+		
+		}//end of getDoc success
+	});
+}
+
+function onFileShow() {
+	$('#desc').keyup(function(){  $('#photo-editor li.on img').attr('alt', this.value); 	});
+	var isFileInputSupported = (function () {
+		 if (navigator.userAgent.match(/(Android (1.0|1.1|1.5|1.6|2.0|2.1))|(Windows Phone (OS 7|8.0))|(XBLWP)|(ZuneWP)|(w(eb)?OSBrowser)|(webOS)|(Kindle\/(1.0|2.0|2.5|3.0))/)) return false;
+		 var el = document.createElement("input"); el.type = "file";
+		 return !el.disabled;
+	})();
+	if (isFileInputSupported) {
+		$('#page-files .app').append('<input type="file" name="photo" accept="image/*;capture=camera" onchange="uploadPhoto(this)" data-role="none" style="visibility:hidden;">');
+	} else {
+		alert('파일 업로드를 지원하지 않습니다.');
+	}
+}
+function onAccessShow() {
+	$('#access-save').click(addAccess);	
+}
+
+function onDeviceReady() {
+	//TODO
+}
+
+
+if($.mobile.phone) document.addEventListener("deviceready", onDeviceReady, false); 
+$('#page-view').on('pageinit',function(){onViewShow()});
+$('#page-files').on('pageinit', function(){onFileShow();});
+$('#page-access').on('pageinit', function(){onAccessShow();});
+</script>
+</body>
+</html>
