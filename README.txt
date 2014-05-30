@@ -1,6 +1,6 @@
-Qmap
+map
 ====
 
-QoLT Commpnity Mapping
+Golden Mapping
 
 테스트중입니다. 
